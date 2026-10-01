@@ -385,12 +385,16 @@ function renderTransactionsTable() {
   const monthFilter = document.getElementById("filterMonth").value;
   const typeFilter = document.getElementById("filterType").value;
   const catFilter = document.getElementById("filterCategory").value;
+  const dateFrom = document.getElementById("filterDateFrom").value;
+  const dateTo = document.getElementById("filterDateTo").value;
   const search = document.getElementById("filterSearch").value.toLowerCase();
 
   let rows = allEntriesFlat();
   if (monthFilter !== "__all__") rows = rows.filter((r) => r.monthKey === monthFilter);
   if (typeFilter !== "__all__") rows = rows.filter((r) => r.type === typeFilter);
   if (catFilter !== "__all__") rows = rows.filter((r) => r.category === catFilter);
+  if (dateFrom) rows = rows.filter((r) => r.date >= dateFrom);
+  if (dateTo) rows = rows.filter((r) => r.date <= dateTo);
   if (search) rows = rows.filter((r) => (r.description || "").toLowerCase().includes(search));
 
   const tbody = document.querySelector("#transactionsTable tbody");
@@ -711,10 +715,19 @@ function init() {
     renderBudgetTab();
   });
   document.getElementById("addMonthBtn").addEventListener("click", addNewMonth);
-  ["filterMonth", "filterType", "filterCategory"].forEach((id) =>
+  ["filterMonth", "filterType", "filterCategory", "filterDateFrom", "filterDateTo"].forEach((id) =>
     document.getElementById(id).addEventListener("change", renderTransactionsTable)
   );
   document.getElementById("filterSearch").addEventListener("input", renderTransactionsTable);
+  document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+    document.getElementById("filterMonth").value = "__all__";
+    document.getElementById("filterType").value = "__all__";
+    document.getElementById("filterCategory").value = "__all__";
+    document.getElementById("filterDateFrom").value = "";
+    document.getElementById("filterDateTo").value = "";
+    document.getElementById("filterSearch").value = "";
+    renderTransactionsTable();
+  });
   document.getElementById("exportHistoryPdfBtn").addEventListener("click", exportHistoryPdf);
 
   initFirebaseAuth();

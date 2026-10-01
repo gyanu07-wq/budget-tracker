@@ -130,8 +130,17 @@
           <label>Category
             <select id="filterCategory"><option value="__all__">All</option></select>
           </label>
+          <label>From date
+            <input type="date" id="filterDateFrom" />
+          </label>
+          <label>To date
+            <input type="date" id="filterDateTo" />
+          </label>
           <label>Search
             <input type="text" id="filterSearch" placeholder="Description..." />
+          </label>
+          <label class="filter-clear-label">&nbsp;
+            <button type="button" id="clearFiltersBtn" class="btn btn-secondary">Clear Filters</button>
           </label>
         </div>
         <div class="table-wrap">
