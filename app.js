@@ -508,6 +508,24 @@ function setupBudgetTab() {
     setTimeout(() => (msg.textContent = ""), 2000);
     renderAll();
   });
+
+  document.getElementById("deleteMonthBtn").addEventListener("click", deleteCurrentMonth);
+}
+
+function deleteCurrentMonth() {
+  const keys = sortedMonthKeys();
+  if (keys.length <= 1) { alert("You can't delete the only remaining month."); return; }
+  const m = store.months[currentMonth];
+  const entryCount = m.transactions.expense.length + m.transactions.income.length + m.investments.length;
+  if (entryCount > 0) {
+    alert(`Can't delete ${m.label}: it still has ${entryCount} entr${entryCount === 1 ? "y" : "ies"} (expenses/income/investments). Remove or move those first in the Transactions tab.`);
+    return;
+  }
+  if (!confirm(`Delete ${m.label}? It has no entries, only its empty budget will be removed.`)) return;
+  delete store.months[currentMonth];
+  currentMonth = sortedMonthKeys().pop();
+  saveData();
+  renderAll();
 }
 
 // ---------- History ----------
@@ -719,6 +737,7 @@ function init() {
     document.getElementById(id).addEventListener("change", renderTransactionsTable)
   );
   document.getElementById("filterSearch").addEventListener("input", renderTransactionsTable);
+  document.getElementById("applyFiltersBtn").addEventListener("click", renderTransactionsTable);
   document.getElementById("clearFiltersBtn").addEventListener("click", () => {
     document.getElementById("filterMonth").value = "__all__";
     document.getElementById("filterType").value = "__all__";
