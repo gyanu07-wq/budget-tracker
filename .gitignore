@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.log
+
+# Contains real historical transaction data - seed Firestore locally, don't publish it
+seed-data.js

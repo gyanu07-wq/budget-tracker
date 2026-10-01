@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Budget Tracker (₹)</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-box">
+      <h2>🔒 My Budget Tracker</h2>
+      <p>Sign in with your private account to access your data.</p>
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" autocomplete="username" required />
+        </div>
+        <div class="form-row">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+        <span id="loginError" class="error-msg"></span>
+      </form>
+      <p class="login-hint">Don't have an account yet? Ask whoever set up the Firebase project to create one for your email in the Firebase Console (Authentication → Users → Add user).</p>
+    </div>
+  </div>
+
+  <div id="appRoot" style="display:none;">
+  <header class="app-header">
+    <h1>💰 My Monthly Budget Tracker</h1>
+    <div class="header-controls">
+      <label for="monthSelect">Month:</label>
+      <select id="monthSelect"></select>
+      <button id="addMonthBtn" class="btn btn-secondary" title="Add a new month">+ New Month</button>
+      <span id="userEmailLabel" class="user-email"></span>
+      <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="add">Add Entry</button>
+    <button class="tab-btn" data-tab="transactions">Transactions</button>
+    <button class="tab-btn" data-tab="budget">Budget</button>
+    <button class="tab-btn" data-tab="history">History</button>
+    <button class="tab-btn" data-tab="data">Export / Import</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div class="card-grid" id="summaryCards"></div>
+
+      <div class="panel-row">
+        <div class="panel">
+          <h2>Expenses by Category <span class="unit">(₹ Planned vs Actual)</span></h2>
+          <div id="expenseBreakdown" class="bar-list"></div>
+        </div>
+        <div class="panel">
+          <h2>Income by Category <span class="unit">(₹ Planned vs Actual)</span></h2>
+          <div id="incomeBreakdown" class="bar-list"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Investments / Savings this month <span class="unit">(₹)</span></h2>
+        <div id="investmentSummary" class="bar-list"></div>
+      </div>
+    </section>
+
+    <!-- ADD ENTRY -->
+    <section id="tab-add" class="tab-panel">
+      <div class="panel narrow">
+        <h2>Add a new entry</h2>
+        <form id="entryForm">
+          <div class="form-row">
+            <label>Type</label>
+            <div class="radio-group">
+              <label><input type="radio" name="entryType" value="expense" checked> Expense</label>
+              <label><input type="radio" name="entryType" value="income"> Income</label>
+              <label><input type="radio" name="entryType" value="investment"> Investment / Saving</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="entryDate">Date</label>
+            <input type="date" id="entryDate" required />
+          </div>
+          <div class="form-row">
+            <label for="entryAmount">Amount (₹)</label>
+            <input type="number" id="entryAmount" min="0" step="0.01" placeholder="0.00" required />
+          </div>
+          <div class="form-row">
+            <label for="entryCategory">Category</label>
+            <select id="entryCategory"></select>
+          </div>
+          <div class="form-row" id="newCategoryRow" style="display:none;">
+            <label for="newCategoryInput">New category name</label>
+            <input type="text" id="newCategoryInput" placeholder="e.g. Pet Care" />
+          </div>
+          <div class="form-row">
+            <label for="entryDescription">Description</label>
+            <input type="text" id="entryDescription" placeholder="e.g. Grocery shopping" />
+          </div>
+          <button type="submit" class="btn btn-primary">Add Entry</button>
+          <span id="addEntryMsg" class="success-msg"></span>
+        </form>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="tab-transactions" class="tab-panel">
+      <div class="panel">
+        <h2>All Entries</h2>
+        <div class="filters">
+          <label>Month
+            <select id="filterMonth">
+              <option value="__all__">All months</option>
+            </select>
+          </label>
+          <label>Type
+            <select id="filterType">
+              <option value="__all__">All</option>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+              <option value="investment">Investment</option>
+            </select>
+          </label>
+          <label>Category
+            <select id="filterCategory"><option value="__all__">All</option></select>
+          </label>
+          <label>Search
+            <input type="text" id="filterSearch" placeholder="Description..." />
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table id="transactionsTable">
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount (₹)</th><th>Actions</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUDGET -->
+    <section id="tab-budget" class="tab-panel">
+      <div class="panel">
+        <h2>Planned Budget for <span id="budgetMonthLabel"></span></h2>
+        <button id="copyPrevBudgetBtn" class="btn btn-secondary">Copy from previous month</button>
+        <div class="form-row" style="margin-top:10px;">
+          <label for="startingBalanceInput">Starting balance (₹)</label>
+          <input type="number" id="startingBalanceInput" step="0.01" />
+        </div>
+        <h3>Expense categories</h3>
+        <div id="budgetExpenseList" class="budget-list"></div>
+        <h3>Income categories</h3>
+        <div id="budgetIncomeList" class="budget-list"></div>
+        <button id="saveBudgetBtn" class="btn btn-primary">Save Budget</button>
+        <span id="saveBudgetMsg" class="success-msg"></span>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="tab-history" class="tab-panel">
+      <div class="panel">
+        <h2>Monthly History</h2>
+        <canvas id="historyChart" width="900" height="320"></canvas>
+      </div>
+      <div class="panel">
+        <h2>Month-by-month totals</h2>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr><th>Month</th><th>Planned Expense</th><th>Actual Expense</th><th>Planned Income</th><th>Actual Income</th><th>Net Savings</th><th>Invested</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT / IMPORT -->
+    <section id="tab-data" class="tab-panel">
+      <div class="panel narrow">
+        <h2>Export your data</h2>
+        <p>Download your data any time, for any month or for everything.</p>
+        <button id="exportCsvBtn" class="btn btn-primary">⬇ Export All as CSV</button>
+        <button id="exportJsonBtn" class="btn btn-secondary">⬇ Export Full Backup (JSON)</button>
+
+        <h2 style="margin-top:30px;">Import a backup</h2>
+        <p>Restore from a previously exported JSON backup. This will replace your current data.</p>
+        <input type="file" id="importJsonInput" accept="application/json" />
+
+        <h2 style="margin-top:30px;">Reset</h2>
+        <p>Danger zone: wipe all data stored in this browser and re-seed from the original Excel export.</p>
+        <button id="resetBtn" class="btn btn-danger">Reset to original seed data</button>
+        <span id="dataMsg" class="success-msg"></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">All amounts are in Indian Rupees (₹ / INR). Data syncs privately to your own cloud account.</footer>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="seed-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
