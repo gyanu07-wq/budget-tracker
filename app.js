@@ -116,6 +116,7 @@ function subscribeToData(uid) {
     if (snap.exists) {
       if (suppressNextSnapshotRender) { suppressNextSnapshotRender = false; return; }
       store = snap.data();
+      mergeNewSeedMonths();
       renderAll();
     } else {
       seedFromExcelData();
@@ -126,6 +127,33 @@ function subscribeToData(uid) {
     console.error(err);
     alert("Could not load data from the cloud: " + err.message);
   });
+}
+
+// Adds any months present in the local seed-data.js but missing from the cloud store (e.g. newly added historical Excel files), without touching existing months.
+function mergeNewSeedMonths() {
+  const seed = window.SEED_DATA || {};
+  const missingKeys = Object.keys(seed).filter((key) => !store.months[key]);
+  if (!missingKeys.length) return;
+
+  missingKeys.forEach((key) => {
+    const m = seed[key];
+    const expense = (m.transactions.expense || []).map((t) => Object.assign({ id: newId() }, t));
+    const income = (m.transactions.income || []).map((t) => Object.assign({ id: newId() }, t));
+    const investments = (m.investments || []).map((t) => Object.assign({ id: newId() }, t));
+    expense.forEach((t) => uniquePush(store.categories.expense, t.category));
+    income.forEach((t) => uniquePush(store.categories.income, t.category));
+    investments.forEach((t) => uniquePush(store.categories.investment, t.category));
+    Object.keys(m.budget.expense || {}).forEach((c) => uniquePush(store.categories.expense, c));
+    Object.keys(m.budget.income || {}).forEach((c) => uniquePush(store.categories.income, c));
+    store.months[key] = {
+      label: m.label,
+      startingBalance: m.startingBalance || 0,
+      budget: { expense: Object.assign({}, m.budget.expense), income: Object.assign({}, m.budget.income) },
+      transactions: { expense, income },
+      investments
+    };
+  });
+  saveData();
 }
 
 // ---------- Month helpers ----------
