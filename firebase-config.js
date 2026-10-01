@@ -1,10 +1,10 @@
-// Paste your Firebase project's web config here (Firebase Console -> Project settings -> General -> Your apps -> SDK setup and configuration).
-// These values are safe to publish in client-side code; access is protected by Firestore security rules + Authentication, not by hiding this file.
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 window.FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCbRWfwOeECbzbBm6IeE2sXgHB6INjRXs8",
+  authDomain: "my-budget-tracker-3b4ce.firebaseapp.com",
+  projectId: "my-budget-tracker-3b4ce",
+  storageBucket: "my-budget-tracker-3b4ce.firebasestorage.app",
+  messagingSenderId: "1052423289336",
+  appId: "1:1052423289336:web:7fc2faff14f6c7cd5e7e0d",
+  measurementId: "G-F5565KTFT1"
 };
