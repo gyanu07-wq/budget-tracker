@@ -515,6 +515,27 @@ function renderHistory() {
       <td>${fmtMoney(d.totals.invested)}</td>
     </tr>`).join("");
 
+  const grand = data.reduce((acc, d) => {
+    acc.plannedExpense += d.totals.plannedExpense;
+    acc.actualExpense += d.totals.actualExpense;
+    acc.plannedIncome += d.totals.plannedIncome;
+    acc.actualIncome += d.totals.actualIncome;
+    acc.netSavings += d.totals.netSavings;
+    acc.invested += d.totals.invested;
+    return acc;
+  }, { plannedExpense: 0, actualExpense: 0, plannedIncome: 0, actualIncome: 0, netSavings: 0, invested: 0 });
+
+  tbody.innerHTML += `
+    <tr class="totals-row">
+      <td>Total</td>
+      <td>${fmtMoney(grand.plannedExpense)}</td>
+      <td>${fmtMoney(grand.actualExpense)}</td>
+      <td>${fmtMoney(grand.plannedIncome)}</td>
+      <td>${fmtMoney(grand.actualIncome)}</td>
+      <td>${fmtMoney(grand.netSavings)}</td>
+      <td>${fmtMoney(grand.invested)}</td>
+    </tr>`;
+
   drawHistoryChart(data);
 }
 
