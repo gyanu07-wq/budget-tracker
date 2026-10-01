@@ -109,7 +109,7 @@ function handleAuthChange(user) {
   if (user) {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("appRoot").style.display = "";
-    document.getElementById("userEmailLabel").textContent = user.email;
+    showUserName(user);
     subscribeToData(user.uid);
   } else {
     store = null;
@@ -117,6 +117,30 @@ function handleAuthChange(user) {
     document.getElementById("loginOverlay").style.display = "flex";
     document.getElementById("appRoot").style.display = "none";
   }
+}
+
+function showUserName(user) {
+  const label = document.getElementById("userEmailLabel");
+  if (!user.displayName) {
+    const name = prompt("What should we call you? (shown here instead of your email)");
+    if (name && name.trim()) {
+      user.updateProfile({ displayName: name.trim() }).then(() => {
+        label.textContent = name.trim();
+      });
+      return;
+    }
+  }
+  label.textContent = user.displayName || user.email;
+}
+
+function renameUser() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const name = prompt("Enter your name:", user.displayName || "");
+  if (name === null || !name.trim()) return;
+  user.updateProfile({ displayName: name.trim() }).then(() => {
+    document.getElementById("userEmailLabel").textContent = name.trim();
+  });
 }
 
 function subscribeToData(uid) {
@@ -764,6 +788,7 @@ function setupAuthUI() {
     });
   });
   document.getElementById("signOutBtn").addEventListener("click", () => auth.signOut());
+  document.getElementById("userEmailLabel").addEventListener("click", renameUser);
 }
 
 document.addEventListener("DOMContentLoaded", init);
