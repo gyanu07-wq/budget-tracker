@@ -170,7 +170,11 @@
         <canvas id="historyChart" width="900" height="320"></canvas>
       </div>
       <div class="panel">
-        <h2>Month-by-month totals</h2>
+        <div class="history-panel-header">
+          <h2>Month-by-month totals</h2>
+          <button id="exportHistoryPdfBtn" class="btn btn-primary no-print">⬇ Export as PDF</button>
+        </div>
+        <p id="historyPrintDate" class="print-only"></p>
         <div class="table-wrap">
           <table id="historyTable">
             <thead>

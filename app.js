@@ -18,6 +18,14 @@ function fmtMoney(n) {
   n = Number(n) || 0;
   return "₹" + n.toLocaleString("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
 }
+// Short form for chart labels, e.g. ₹2.28L or ₹45K
+function fmtCompactINR(n) {
+  n = Number(n) || 0;
+  const abs = Math.abs(n);
+  if (abs >= 100000) return "₹" + (n / 100000).toFixed(2).replace(/\.?0+$/, "") + "L";
+  if (abs >= 1000) return "₹" + (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return "₹" + Math.round(n);
+}
 function monthKeyFromDate(dateStr) {
   return dateStr.slice(0, 7); // "YYYY-MM"
 }
@@ -499,6 +507,14 @@ function setupBudgetTab() {
 }
 
 // ---------- History ----------
+function exportHistoryPdf() {
+  const dateEl = document.getElementById("historyPrintDate");
+  if (dateEl) dateEl.textContent = "Generated on " + new Date().toLocaleString("en-IN");
+  const cleanup = () => window.removeEventListener("afterprint", cleanup);
+  window.addEventListener("afterprint", cleanup);
+  window.print();
+}
+
 function renderHistory() {
   const keys = sortedMonthKeys();
   const data = keys.map((k) => ({ key: k, label: store.months[k].label, totals: computeMonthTotals(k) }));
@@ -546,12 +562,17 @@ function drawHistoryChart(data) {
   ctx.clearRect(0, 0, W, H);
   if (!data.length) { ctx.fillText("No data yet.", 20, 30); return; }
 
-  const padding = { left: 60, right: 20, top: 20, bottom: 40 };
+  const padding = { left: 60, right: 20, top: 32, bottom: 40 };
   const chartW = W - padding.left - padding.right;
   const chartH = H - padding.top - padding.bottom;
-  const maxVal = Math.max(1, ...data.flatMap((d) => [d.totals.actualExpense, d.totals.actualIncome]));
+  const maxVal = Math.max(1, ...data.flatMap((d) => [d.totals.actualExpense, d.totals.actualIncome, d.totals.invested]));
   const groupW = chartW / data.length;
-  const barW = Math.min(28, groupW / 4);
+  const barW = Math.min(22, groupW / 5);
+  const series = [
+    { key: "actualExpense", color: "#c0504d" },
+    { key: "actualIncome", color: "#2563eb" },
+    { key: "invested", color: "#2f6f4e" }
+  ];
 
   // axes
   ctx.strokeStyle = "#ccc";
@@ -573,12 +594,20 @@ function drawHistoryChart(data) {
 
   data.forEach((d, i) => {
     const groupX = padding.left + i * groupW + groupW / 2;
-    const expH = (d.totals.actualExpense / maxVal) * chartH;
-    const incH = (d.totals.actualIncome / maxVal) * chartH;
-    ctx.fillStyle = "#c0504d";
-    ctx.fillRect(groupX - barW - 2, padding.top + chartH - expH, barW, expH);
-    ctx.fillStyle = "#2563eb";
-    ctx.fillRect(groupX + 2, padding.top + chartH - incH, barW, incH);
+    const groupStartX = groupX - (series.length * barW) / 2 - (series.length - 1);
+
+    series.forEach((s, si) => {
+      const val = d.totals[s.key];
+      const barH = (val / maxVal) * chartH;
+      const barX = groupStartX + si * (barW + 1);
+      ctx.fillStyle = s.color;
+      ctx.fillRect(barX, padding.top + chartH - barH, barW, barH);
+
+      ctx.textAlign = "center";
+      ctx.font = "9px Segoe UI";
+      ctx.fillText(fmtCompactINR(val), barX + barW / 2, padding.top + chartH - barH - 4);
+    });
+
     ctx.fillStyle = "#1f2a24";
     ctx.font = "11px Segoe UI";
     ctx.textAlign = "center";
@@ -591,6 +620,8 @@ function drawHistoryChart(data) {
   ctx.fillStyle = "#1f2a24"; ctx.fillText("Expense", padding.left + 14, 11);
   ctx.fillStyle = "#2563eb"; ctx.fillRect(padding.left + 90, 2, 10, 10);
   ctx.fillStyle = "#1f2a24"; ctx.fillText("Income", padding.left + 104, 11);
+  ctx.fillStyle = "#2f6f4e"; ctx.fillRect(padding.left + 170, 2, 10, 10);
+  ctx.fillStyle = "#1f2a24"; ctx.fillText("Invested", padding.left + 184, 11);
 }
 
 // ---------- Export / Import ----------
@@ -684,6 +715,7 @@ function init() {
     document.getElementById(id).addEventListener("change", renderTransactionsTable)
   );
   document.getElementById("filterSearch").addEventListener("input", renderTransactionsTable);
+  document.getElementById("exportHistoryPdfBtn").addEventListener("click", exportHistoryPdf);
 
   initFirebaseAuth();
 }
