@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>My Budget Tracker (₹)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -34,18 +37,21 @@
       <label for="monthSelect">Month:</label>
       <select id="monthSelect"></select>
       <button id="addMonthBtn" class="btn btn-secondary" title="Add a new month">+ New Month</button>
-      <span id="userEmailLabel" class="user-email" title="Click to change your name"></span>
+      <span class="user-chip">
+        <span id="userAvatar" class="user-avatar"></span>
+        <span id="userEmailLabel" class="user-email" title="Click to change your name"></span>
+      </span>
       <button id="signOutBtn" class="btn btn-secondary">Sign Out</button>
     </div>
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-    <button class="tab-btn" data-tab="add">Add Entry</button>
-    <button class="tab-btn" data-tab="transactions">Transactions</button>
-    <button class="tab-btn" data-tab="budget">Budget</button>
-    <button class="tab-btn" data-tab="history">History</button>
-    <button class="tab-btn" data-tab="data">Export / Import</button>
+    <button class="tab-btn active" data-tab="dashboard"><span class="tab-icon">📊</span> Dashboard</button>
+    <button class="tab-btn" data-tab="add"><span class="tab-icon">➕</span> Add Entry</button>
+    <button class="tab-btn" data-tab="transactions"><span class="tab-icon">🧾</span> Transactions</button>
+    <button class="tab-btn" data-tab="budget"><span class="tab-icon">🎯</span> Budget</button>
+    <button class="tab-btn" data-tab="history"><span class="tab-icon">📈</span> History</button>
+    <button class="tab-btn" data-tab="data"><span class="tab-icon">📤</span> Export / Import</button>
   </nav>
 
   <main>

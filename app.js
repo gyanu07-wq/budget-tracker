@@ -121,16 +121,20 @@ function handleAuthChange(user) {
 
 function showUserName(user) {
   const label = document.getElementById("userEmailLabel");
+  const avatar = document.getElementById("userAvatar");
   if (!user.displayName) {
     const name = prompt("What should we call you? (shown here instead of your email)");
     if (name && name.trim()) {
       user.updateProfile({ displayName: name.trim() }).then(() => {
         label.textContent = name.trim();
+        avatar.textContent = name.trim().charAt(0).toUpperCase();
       });
       return;
     }
   }
-  label.textContent = user.displayName || user.email;
+  const displayText = user.displayName || user.email;
+  label.textContent = displayText;
+  avatar.textContent = displayText.charAt(0).toUpperCase();
 }
 
 function renameUser() {
@@ -140,6 +144,7 @@ function renameUser() {
   if (name === null || !name.trim()) return;
   user.updateProfile({ displayName: name.trim() }).then(() => {
     document.getElementById("userEmailLabel").textContent = name.trim();
+    document.getElementById("userAvatar").textContent = name.trim().charAt(0).toUpperCase();
   });
 }
 
@@ -278,14 +283,14 @@ function renderDashboard() {
   const diffExpense = totals.plannedExpense - totals.actualExpense;
   const diffIncome = totals.actualIncome - totals.plannedIncome;
   cards.innerHTML = `
-    <div class="card"><div class="label">Starting Balance</div><div class="value">${fmtMoney(store.months[currentMonth].startingBalance)}</div></div>
-    <div class="card"><div class="label">Planned Expense</div><div class="value">${fmtMoney(totals.plannedExpense)}</div></div>
-    <div class="card"><div class="label">Actual Expense</div><div class="value ${diffExpense < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualExpense)}</div></div>
-    <div class="card"><div class="label">Planned Income</div><div class="value">${fmtMoney(totals.plannedIncome)}</div></div>
-    <div class="card"><div class="label">Actual Income</div><div class="value ${diffIncome < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualIncome)}</div></div>
-    <div class="card"><div class="label">Net Savings this month</div><div class="value ${totals.netSavings < 0 ? "negative" : "positive"}">${fmtMoney(totals.netSavings)}</div></div>
-    <div class="card"><div class="label">Ending Balance</div><div class="value">${fmtMoney(totals.endingBalance)}</div></div>
-    <div class="card"><div class="label">Invested / Saved</div><div class="value">${fmtMoney(totals.invested)}</div></div>
+    <div class="card card-balance"><div class="label">💼 Starting Balance</div><div class="value">${fmtMoney(store.months[currentMonth].startingBalance)}</div></div>
+    <div class="card card-expense"><div class="label">📝 Planned Expense</div><div class="value">${fmtMoney(totals.plannedExpense)}</div></div>
+    <div class="card card-expense"><div class="label">💸 Actual Expense</div><div class="value ${diffExpense < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualExpense)}</div></div>
+    <div class="card card-income"><div class="label">📝 Planned Income</div><div class="value">${fmtMoney(totals.plannedIncome)}</div></div>
+    <div class="card card-income"><div class="label">💵 Actual Income</div><div class="value ${diffIncome < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualIncome)}</div></div>
+    <div class="card card-savings"><div class="label">📈 Net Savings this month</div><div class="value ${totals.netSavings < 0 ? "negative" : "positive"}">${fmtMoney(totals.netSavings)}</div></div>
+    <div class="card card-balance"><div class="label">🏦 Ending Balance</div><div class="value">${fmtMoney(totals.endingBalance)}</div></div>
+    <div class="card card-invested"><div class="label">🌱 Invested / Saved</div><div class="value">${fmtMoney(totals.invested)}</div></div>
   `;
 
   renderBreakdown("expenseBreakdown", "expense");
