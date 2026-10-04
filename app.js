@@ -435,7 +435,12 @@ function allEntriesFlat() {
     m.transactions.income.forEach((t) => rows.push(Object.assign({ monthKey: key, type: "income" }, t)));
     m.investments.forEach((t) => rows.push(Object.assign({ monthKey: key, type: "investment" }, t)));
   });
-  rows.sort((a, b) => (a.date < b.date ? 1 : -1));
+  // Latest date first; entries added most recently (by id) first within the same date.
+  rows.sort((a, b) => {
+    if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+    if (a.id === b.id) return 0;
+    return a.id < b.id ? 1 : -1;
+  });
   return rows;
 }
 
