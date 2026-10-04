@@ -170,6 +170,23 @@ main { padding: 24px 28px 70px; max-width: 1140px; margin: 0 auto; }
 .card .value.negative { color: var(--danger); }
 .card .value.positive { color: var(--primary); }
 
+.combo-card .combo-values { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.combo-card .combo-value {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: 1.15rem; font-weight: 700; font-family: "Poppins", "Segoe UI", sans-serif;
+}
+.combo-card .combo-tag {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  color: var(--muted); min-width: 56px;
+}
+.combo-card .combo-diff {
+  font-size: 0.82rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 999px; width: fit-content;
+}
+.combo-card .combo-diff.positive { color: #1a7a46; background: #e1f3e8; }
+.combo-card .combo-diff.negative { color: var(--danger); background: #fde7e5; }
+
 .panel-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

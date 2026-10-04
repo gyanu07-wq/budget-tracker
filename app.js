@@ -280,14 +280,39 @@ function setupTabs() {
 function renderDashboard() {
   const totals = computeMonthTotals(currentMonth);
   const cards = document.getElementById("summaryCards");
-  const diffExpense = totals.plannedExpense - totals.actualExpense;
-  const diffIncome = totals.actualIncome - totals.plannedIncome;
+
+  // Expense: over budget (actual > planned) is bad -> up arrow, red.
+  const expenseDiff = totals.actualExpense - totals.plannedExpense;
+  const expenseOver = expenseDiff > 0;
+  const expenseArrow = expenseOver ? "▲" : "▼";
+  const expenseClass = expenseOver ? "negative" : "positive";
+  const expenseNote = expenseOver ? "over budget" : "under budget";
+
+  // Income: above target (actual > planned) is good -> up arrow, green.
+  const incomeDiff = totals.actualIncome - totals.plannedIncome;
+  const incomeUp = incomeDiff >= 0;
+  const incomeArrow = incomeUp ? "▲" : "▼";
+  const incomeClass = incomeUp ? "positive" : "negative";
+  const incomeNote = incomeUp ? "above target" : "below target";
+
   cards.innerHTML = `
     <div class="card card-balance"><div class="label">💼 Starting Balance</div><div class="value">${fmtMoney(store.months[currentMonth].startingBalance)}</div></div>
-    <div class="card card-expense"><div class="label">📝 Planned Expense</div><div class="value">${fmtMoney(totals.plannedExpense)}</div></div>
-    <div class="card card-expense"><div class="label">💸 Actual Expense</div><div class="value ${diffExpense < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualExpense)}</div></div>
-    <div class="card card-income"><div class="label">📝 Planned Income</div><div class="value">${fmtMoney(totals.plannedIncome)}</div></div>
-    <div class="card card-income"><div class="label">💵 Actual Income</div><div class="value ${diffIncome < 0 ? "negative" : "positive"}">${fmtMoney(totals.actualIncome)}</div></div>
+    <div class="card card-expense combo-card">
+      <div class="label">📝 Expense</div>
+      <div class="combo-values">
+        <div class="combo-value"><span class="combo-tag">Planned</span>${fmtMoney(totals.plannedExpense)}</div>
+        <div class="combo-value"><span class="combo-tag">Actual</span>${fmtMoney(totals.actualExpense)}</div>
+      </div>
+      <div class="combo-diff ${expenseClass}">${expenseArrow} ${fmtMoney(Math.abs(expenseDiff))} ${expenseNote}</div>
+    </div>
+    <div class="card card-income combo-card">
+      <div class="label">💵 Income</div>
+      <div class="combo-values">
+        <div class="combo-value"><span class="combo-tag">Planned</span>${fmtMoney(totals.plannedIncome)}</div>
+        <div class="combo-value"><span class="combo-tag">Actual</span>${fmtMoney(totals.actualIncome)}</div>
+      </div>
+      <div class="combo-diff ${incomeClass}">${incomeArrow} ${fmtMoney(Math.abs(incomeDiff))} ${incomeNote}</div>
+    </div>
     <div class="card card-savings"><div class="label">📈 Net Savings this month</div><div class="value ${totals.netSavings < 0 ? "negative" : "positive"}">${fmtMoney(totals.netSavings)}</div></div>
     <div class="card card-balance"><div class="label">🏦 Ending Balance</div><div class="value">${fmtMoney(totals.endingBalance)}</div></div>
     <div class="card card-invested"><div class="label">🌱 Invested / Saved</div><div class="value">${fmtMoney(totals.invested)}</div></div>
