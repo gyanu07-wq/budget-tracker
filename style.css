@@ -290,6 +290,9 @@ main { padding: 24px 28px 70px; max-width: 1140px; margin: 0 auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
 th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 th { color: var(--muted); font-weight: 700; background: #f7faf8; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.4px; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--primary-dark); }
+.sort-indicator { font-size: 0.7rem; }
 tbody tr:nth-child(even) td { background: #fafcfb; }
 tr:hover td { background: var(--primary-light) !important; }
 

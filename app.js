@@ -12,6 +12,7 @@ let auth = null;
 let db = null;
 let unsubscribeSnapshot = null;
 let suppressNextSnapshotRender = false;
+let dateSortDir = "desc"; // "desc" = latest first, "asc" = oldest first
 
 // ---------- Utilities ----------
 function fmtMoney(n) {
@@ -469,6 +470,7 @@ function renderTransactionsTable() {
   if (dateFrom) rows = rows.filter((r) => r.date >= dateFrom);
   if (dateTo) rows = rows.filter((r) => r.date <= dateTo);
   if (search) rows = rows.filter((r) => (r.description || "").toLowerCase().includes(search));
+  if (dateSortDir === "asc") rows = rows.slice().reverse();
 
   const tbody = document.querySelector("#transactionsTable tbody");
   if (!rows.length) { tbody.innerHTML = `<tr><td colspan="6">No entries found.</td></tr>`; return; }
@@ -821,6 +823,11 @@ function init() {
     renderTransactionsTable();
   });
   document.getElementById("exportHistoryPdfBtn").addEventListener("click", exportHistoryPdf);
+  document.getElementById("sortDateTh").addEventListener("click", () => {
+    dateSortDir = dateSortDir === "desc" ? "asc" : "desc";
+    document.getElementById("dateSortIndicator").textContent = dateSortDir === "desc" ? "▼" : "▲";
+    renderTransactionsTable();
+  });
 
   initFirebaseAuth();
 }
