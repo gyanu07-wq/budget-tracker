@@ -793,6 +793,25 @@ function renderAll() {
   renderBudgetTab();
   renderHistory();
   populateCategorySelect();
+  renderRecentEntries();
+}
+
+function renderRecentEntries() {
+  const el = document.getElementById("recentEntriesList");
+  if (!el) return;
+  const recent = allEntriesFlat()
+    .slice()
+    .sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
+    .slice(0, 3);
+  if (!recent.length) { el.innerHTML = "<p>No entries added yet.</p>"; return; }
+  el.innerHTML = recent.map((r) => `
+    <div class="recent-entry">
+      <div class="recent-main">
+        <span class="recent-desc">${r.description || r.category}</span>
+        <span class="recent-meta"><span class="tag ${r.type}">${r.type}</span> ${r.category} · ${r.date}</span>
+      </div>
+      <div class="recent-amount">${fmtMoney(r.amount)}</div>
+    </div>`).join("");
 }
 
 function init() {

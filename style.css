@@ -306,6 +306,16 @@ tr:hover td { background: var(--primary-light) !important; }
 .tag.income { background: #dbe9ff; color: #1d4ed8; }
 .tag.investment { background: #ece4fb; color: #6d28d9; }
 
+.recent-entry {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.recent-entry:last-child { border-bottom: none; }
+.recent-entry .recent-main { display: flex; flex-direction: column; gap: 2px; }
+.recent-entry .recent-desc { font-weight: 600; font-size: 0.9rem; }
+.recent-entry .recent-meta { font-size: 0.78rem; color: var(--muted); }
+.recent-entry .recent-amount { font-weight: 700; font-family: "Poppins", "Segoe UI", sans-serif; white-space: nowrap; }
+
 .row-actions button { background: none; border: none; cursor: pointer; font-size: 0.85rem; margin-right: 8px; font-weight: 600; }
 .row-actions .edit-btn { color: var(--income); }
 .row-actions .delete-btn { color: var(--danger); }
