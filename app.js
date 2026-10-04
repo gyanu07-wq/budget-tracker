@@ -295,8 +295,23 @@ function renderDashboard() {
   const incomeClass = incomeUp ? "positive" : "negative";
   const incomeNote = incomeUp ? "above target" : "below target";
 
+  // Balance: ending higher than starting is good -> up arrow, green.
+  const startingBalance = store.months[currentMonth].startingBalance;
+  const balanceDiff = totals.endingBalance - startingBalance;
+  const balanceUp = balanceDiff >= 0;
+  const balanceArrow = balanceUp ? "▲" : "▼";
+  const balanceClass = balanceUp ? "positive" : "negative";
+  const balanceNote = balanceUp ? "increase" : "decrease";
+
   cards.innerHTML = `
-    <div class="card card-balance"><div class="label">💼 Starting Balance</div><div class="value">${fmtMoney(store.months[currentMonth].startingBalance)}</div></div>
+    <div class="card card-balance combo-card">
+      <div class="label">💼 Balance</div>
+      <div class="combo-values">
+        <div class="combo-value"><span class="combo-tag">Starting</span>${fmtMoney(startingBalance)}</div>
+        <div class="combo-value"><span class="combo-tag">Ending</span>${fmtMoney(totals.endingBalance)}</div>
+      </div>
+      <div class="combo-diff ${balanceClass}">${balanceArrow} ${fmtMoney(Math.abs(balanceDiff))} ${balanceNote}</div>
+    </div>
     <div class="card card-expense combo-card">
       <div class="label">📝 Expense</div>
       <div class="combo-values">
@@ -314,7 +329,6 @@ function renderDashboard() {
       <div class="combo-diff ${incomeClass}">${incomeArrow} ${fmtMoney(Math.abs(incomeDiff))} ${incomeNote}</div>
     </div>
     <div class="card card-savings"><div class="label">📈 Net Savings this month</div><div class="value ${totals.netSavings < 0 ? "negative" : "positive"}">${fmtMoney(totals.netSavings)}</div></div>
-    <div class="card card-balance"><div class="label">🏦 Ending Balance</div><div class="value">${fmtMoney(totals.endingBalance)}</div></div>
     <div class="card card-invested"><div class="label">🌱 Invested / Saved</div><div class="value">${fmtMoney(totals.invested)}</div></div>
   `;
 
